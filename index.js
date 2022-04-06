@@ -1,4 +1,5 @@
 import { ApolloServer, gql } from "apollo-server";
+import { v1 as uuid } from "uuid";
 
 //Es indiferente de donde salgan los datos:
 const persons = [
@@ -44,6 +45,10 @@ const typeDefinitions = gql`
     allPersons: [Person]!
     findPerson(name: String!): Person
   }
+
+  type Mutation {
+    createPerson(name: String!, age: Int!, country: String!): Person
+  }
 `;
 
 //Cuando yo le pido una persona, De donde saca los datos?w
@@ -73,6 +78,16 @@ const resolvers = {
   },
 };
 
+//Esta es una mutacion
+Mutation: {
+  createPerson: (root, args) => {
+    //const { name, age, country } = args;
+    const person = { ...args, id: uuid() };
+
+    persons.push(person);
+    return person;
+  };
+}
 //Creacion del Servidor
 const server = new ApolloServer({
   typeDefs: typeDefinitions,
