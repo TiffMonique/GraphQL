@@ -39,13 +39,11 @@ const typeDefinitions = gql`
     info: Info!
     id: ID!
   }
-
   type Query {
     personCount: Int!
     allPersons: [Person]!
     findPerson(name: String!): Person
   }
-
   type Mutation {
     createPerson(name: String!, age: Int!, country: String!): Person
   }
