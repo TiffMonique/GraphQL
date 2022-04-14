@@ -1,2 +1,0 @@
-# GraphQL
-Iniciando en GraphQL *-*
