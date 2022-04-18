@@ -2,10 +2,10 @@ import { ApolloServer, UserInputError, gql } from "apollo-server";
 import { v1 as uuid } from "uuid";
 
 //Es indiferente de donde salgan los datos:
-const persons = [
+let persons = [
   {
     name: "Juan", //name: 'Juan',
-    //age: 20,
+    age: 20,
     country: "MX", //country: 'MX'
     id: "defrgrovkr",
   },
@@ -36,6 +36,12 @@ const typeDefinitions = gql`
     county: String!
     name: String!
   }
+
+  input InfoInput {
+    county: String
+    name: String
+  }
+
   type Person {
     name: String!
     age: Int
@@ -43,6 +49,14 @@ const typeDefinitions = gql`
     info: Info!
     id: ID!
   }
+
+  input PersonInput {
+    name: String
+    age: Int
+    country: String
+    info: InfoInput
+  }
+
   type Query {
     personCount: Int!
     allPersons(age: YesNo): [Person]!
@@ -50,7 +64,7 @@ const typeDefinitions = gql`
   }
   type Mutation {
     createPerson(name: String!, age: Int!, country: String!): Person
-    editAge(name: String!, age: Int): Person
+    edit(id: String!, input: PersonInput): Person
   }
 `;
 
@@ -84,13 +98,12 @@ const resolvers = {
       return person;
     },
 
-    editAge: (root, args) => {
-      const personIndex = persons.findIndex(
-        (person) => person.name === args.name
-      );
-      if (personIndex === -1) return null;
+    edit: (root, args) => {
+      const { id, input } = args;
+      const personIndex = persons.findIndex((p) => p.id === id);
+      if (personIndex === -1) throw new Error("Person not found");
       const person = persons[personIndex];
-      const updatedPerson = (person = { ...person, age: args.age });
+      const updatedPerson = { ...person, ...input };
       persons[personIndex] = updatedPerson;
       return updatedPerson;
     },
